@@ -57,7 +57,7 @@ class Wireless {
             } else if (network.hotspot.running) {
                 network.hotspot.stop();
                 network.wireless.disconnect("wlan0");
-                network.hotspot.start("HOOBS", "wlan0");
+                network.hotspot.start("Homebridge WiFi Setup", "wlan0");
             }
         }
 

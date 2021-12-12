@@ -64,7 +64,7 @@ class Server {
             this.running = true;
 
             network.wireless.disconnect("wlan0");
-            network.hotspot.start("HOOBS", "wlan0");
+            network.hotspot.start("Homebridge WiFi Setup", "wlan0");
 
             this.log.info(`listening on port ${parseInt(port, 10) || 80}`);
         });

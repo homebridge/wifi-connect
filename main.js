@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**************************************************************************************************
  * hoobs-portal                                                                                   *
  * Copyright (C) 2021 HOOBS                                                                       *
@@ -23,6 +25,7 @@ const log = require("./server/logger")();
 const server = require("./server")(log);
 
 function test(port, attempts) {
+    console.log("Waiting for network...");
     if (network.connected) {
         process.exit();
     } else if (attempts >= 20) {
@@ -56,4 +59,4 @@ process.on("SIGTERM", teardown);
 process.on("SIGUSR1", teardown);
 process.on("SIGUSR2", teardown);
 
-module.exports = daemon;
+daemon();

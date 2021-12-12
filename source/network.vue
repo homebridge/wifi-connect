@@ -38,11 +38,10 @@
 
         .ssid {
             flex: 1;
-            color: #fff;
+            color: #000;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            opacity: 0.5;
 
             @media (min-width: 300px) and (max-width: 815px) {
                 font-size: 15px;

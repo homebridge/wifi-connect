@@ -1,30 +1,44 @@
 {
-    "name": "hbs-portal",
-    "version": "4.1.1",
-    "description": "HOOBS Capitive WiFi Portal",
+    "name": "@homebridge/wifi-connect",
+    "version": "4.2.0",
+    "description": "Homebridge Capitive WiFi Portal",
     "license": "GPL-3.0",
     "repository": {
         "type": "git",
-        "url": "git://github.com/hoobs-org/portal.git"
+        "url": "git://github.com/homebridge/wifi-connect.git"
     },
     "bugs": {
-        "url": "https://github.com/hoobs-org/portal/issues"
+        "url": "https://github.com/homebridge/wifi-connect/issues"
     },
     "main": "main.js",
+    "bin": {
+        "wifi-connect": "./main.js"
+    },
+    "files": [
+        "main.js",
+        "interface",
+        "server"
+    ],
     "author": {
         "name": "Michael J Kellsy"
     },
     "scripts": {
-        "lint": "eslint '*.ts'",
-        "build": "scripts/build --lint",
-        "debug": "scripts/debug"
+        "build": "vue-cli-service build",
+        "prepublishOnly": "npm run build"
     },
+    "bundledDependencies": [
+        "@hoobs/network",
+        "commander",
+        "compression",
+        "express",
+        "http-terminator"
+    ],
     "dependencies": {
-        "@hoobs/network": "^1.0.14",
-        "commander": "^8.1.0",
-        "compression": "^1.7.4",
-        "express": "^4.17.1",
-        "http-terminator": "^3.0.0"
+        "@hoobs/network": "1.0.14",
+        "commander": "8.1.0",
+        "compression": "1.7.4",
+        "express": "4.17.1",
+        "http-terminator": "3.0.0"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "~4.5.0",

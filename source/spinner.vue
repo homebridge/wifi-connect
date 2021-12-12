@@ -49,7 +49,7 @@
 
             .fill {
                 fill: none;
-                stroke: #feb400;
+                stroke: #491F59;
                 stroke-width: 15.225;
                 stroke-linecap: round;
                 stroke-dasharray: (1166 * .9) (1166 * .1);
@@ -58,7 +58,7 @@
             }
 
             .marker {
-                fill: #feb400;
+                fill: #491F59;
             }
         }
     }

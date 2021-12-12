@@ -2,7 +2,7 @@
     <div class="container">
         <div class="title">
             <logo />
-            <h1>WiFi</h1>
+            <h1>Homebridge WiFi Setup</h1>
         </div>
         <p v-if="!connected && !loading && !selected">
             Networks
@@ -23,7 +23,7 @@
         </div>
         <form v-else-if="!connected && !loading && selected" class="security" autocomplete="off">
             <div class="password">
-                <input type="password" placeholder="Password" v-model="password" autocomplete="off" data-lpignore="true" />
+                <input type="password" placeholder="Password" v-model="password" autocomplete="current-password" data-lpignore="true" autofocus />
             </div>
             <div class="actions">
                 <div class="button" v-on:click="scan()">Cancel</div>
@@ -147,12 +147,12 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        background: #141414;
+        background: #ffffff;
         font-family: "Montserrat", sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         font-size: 12pt;
-        color: #999;
+        color: #000;
     }
 
     ::-webkit-scrollbar {
@@ -176,12 +176,12 @@
     .button {
         height: 40px;
         box-sizing: border-box;
-        background: #252525;
+        background: #491F59;
         color: #fff !important;
         text-decoration: none !important;
         display: inline-flex;
         align-items: center;
-        border: 1px #1a1a1a solid;
+        border: 1px #491F59 solid;
         padding: 10.5px 14px 9.5px 14px;
         user-select: none;
         margin: 0 0 0 10px;
@@ -235,7 +235,7 @@
                 font-weight: normal;
                 padding: 0;
                 margin: 2px 0 0 0;
-                color: #feb400;
+                color: #000;
                 user-select: none;
             }
 
@@ -245,7 +245,7 @@
                 font-size: 17px;
                 line-height: normal;
                 font-size: 22px;
-                color: #feb400;
+                color: #000;
                 user-select: none;
             }
 
@@ -275,7 +275,7 @@
                 .password {
                     display: flex;
                     flex-direction: row;
-                    background: #252525;
+                    background: #e7e7e7;
                     padding: 20px;
 
                     input {
@@ -283,8 +283,8 @@
                         border: 0 none !important;
                         outline: 0 none !important;
                         background: transparent;
-                        font-size: 14px;
-                        color: #fff;
+                        font-size: 18px;
+                        color: #000;
                     }
                 }
 
@@ -303,7 +303,7 @@
 
                 .list {
                     padding: 5px 20px;
-                    background: #252525;
+                    background: #fff;
                 }
 
                 .network {

@@ -27,7 +27,7 @@ class Hotspot {
     start(request, response) {
         if (!network.hotspot.running && network.wireless.enabled) {
             network.wireless.disconnect(request.body.iface || "wlan0");
-            network.hotspot.start(request.body.ssid || "HOOBS", request.body.iface || "wlan0");
+            network.hotspot.start(request.body.ssid || "Homebridge WiFi Setup", request.body.iface || "wlan0");
         }
 
         response.send();

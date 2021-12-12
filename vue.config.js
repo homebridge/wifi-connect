@@ -26,7 +26,7 @@ module.exports = {
         config.plugin("html").tap((args) => {
             const payload = args;
 
-            payload[0].title = "HOOBS";
+            payload[0].title = "Homebridge WiFi Setup";
 
             return payload;
         });
