@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-const network = require("@hoobs/network");
+const network = require("./network");
 const program = require("commander");
 const pjson = require("./package.json");
 const log = require("./server/logger")();

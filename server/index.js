@@ -18,7 +18,7 @@
 
 const http = require("http");
 const express = require("express");
-const network = require("@hoobs/network");
+const network = require("../network");
 const compression = require("compression");
 const { createHttpTerminator } = require("http-terminator");
 const { join } = require("path");

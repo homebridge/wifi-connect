@@ -17,6 +17,7 @@
     "files": [
         "main.js",
         "interface",
+        "network",
         "server"
     ],
     "author": {
@@ -28,18 +29,16 @@
     "scripts": {
         "build": "vite build",
         "lint": "eslint .",
-        "test": "node --test",
+        "test": "node --test test/*.test.js",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "bundledDependencies": [
-        "@hoobs/network",
         "commander",
         "compression",
         "express",
         "http-terminator"
     ],
     "dependencies": {
-        "@hoobs/network": "1.0.14",
         "commander": "8.1.0",
         "compression": "1.7.4",
         "express": "4.17.1",

@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-const network = require("@hoobs/network");
-const command = require("@hoobs/network/lib/command");
+const network = require("../network");
 
 class Wireless {
     constructor(app) {
@@ -50,7 +49,7 @@ class Wireless {
                 if (network.hotspot.running) {
                     network.hotspot.stop();
 
-                    command.exec("nmcli", "device", "reapply", `'${(request.params.iface || "").replace(/'/gi, "'\"'\"'")}'`);
+                    network.wireless.reapply(request.params.iface);
                 }
 
                 process.exit();
