@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [latest]
+
+# no rights by default; each job asks for what it needs
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint, test and build (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+
+      # the tests use fake nmcli, ip, hostapd and dnsmasq programs, so no network set-up is needed
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+      - name: Check what would be published
+        run: |
+          npm pack --dry-run --ignore-scripts --json > pack.json
+          # the built page, the server and the network code must be in the package, the tests must not
+          jq -e '[.[0].files[].path] | (index("interface/index.html") and index("server/index.js") and index("network/index.js") and index("main.js"))' pack.json
+          jq -e '[.[0].files[].path | select(startswith("test/") or startswith("source/"))] | length == 0' pack.json
