@@ -5,7 +5,7 @@
     "license": "GPL-3.0",
     "repository": {
         "type": "git",
-        "url": "git://github.com/homebridge/wifi-connect.git"
+        "url": "git+https://github.com/homebridge/wifi-connect.git"
     },
     "bugs": {
         "url": "https://github.com/homebridge/wifi-connect/issues"
@@ -22,9 +22,14 @@
     "author": {
         "name": "Michael J Kellsy"
     },
+    "engines": {
+        "node": "^20.19.0 || ^22.12.0 || >=24"
+    },
     "scripts": {
-        "build": "vue-cli-service build",
-        "prepublishOnly": "npm run build"
+        "build": "vite build",
+        "lint": "eslint .",
+        "test": "node --test",
+        "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "bundledDependencies": [
         "@hoobs/network",
@@ -41,22 +46,14 @@
         "http-terminator": "3.0.0"
     },
     "devDependencies": {
-        "@vue/cli-plugin-babel": "~4.5.0",
-        "@vue/cli-plugin-eslint": "~4.5.0",
-        "@vue/cli-service": "~4.5.0",
-        "@vue/compiler-sfc": "^3.0.0",
-        "@vue/eslint-config-airbnb": "^5.0.2",
-        "axios": "^0.21.1",
-        "babel-eslint": "^10.1.0",
-        "core-js": "^3.6.5",
-        "eslint": "^6.7.2",
-        "eslint-plugin-import": "^2.20.2",
-        "eslint-plugin-vue": "^7.0.0",
-        "inquirer": "^8.1.2",
-        "nodemon": "^2.0.12",
-        "rimraf": "^3.0.2",
-        "sass": "^1.26.5",
-        "sass-loader": "^8.0.2",
-        "vue": "^3.0.0"
+        "@eslint/js": "10.0.1",
+        "@vitejs/plugin-vue": "6.0.11",
+        "axios": "1.21.1",
+        "eslint": "10.15.0",
+        "eslint-plugin-vue": "10.12.1",
+        "globals": "17.14.0",
+        "sass": "1.108.2",
+        "vite": "8.3.8",
+        "vue": "3.5.45"
     }
 }
