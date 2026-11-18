@@ -18,11 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
+const { parseArgs } = require("node:util");
 const network = require("./network");
-const program = require("commander");
 const pjson = require("./package.json");
 const log = require("./server/logger")();
 const server = require("./server")(log);
+
+const USAGE = `Usage: wifi-connect [options] [start]
+
+Options:
+  -v, --version      output the current version
+  -d, --debug        turn on debug level logging
+  -p, --port <port>  change the port the portal runs on
+  -h, --help         display this help`;
 
 function test(port, attempts) {
     console.log("Waiting for network...");
@@ -38,15 +46,37 @@ function test(port, attempts) {
 }
 
 function daemon() {
-    program.version(pjson.version, "-v, --version", "output the current version");
-    program.option("-d, --debug", "turn on debug level logging", () => { log.debugging = true; });
+    let parsed;
 
-    program.command("start", { isDefault: true })
-        .description("start the portal service")
-        .option("-p, --port <port>", "change the port the portal runs on")
-        .action((command) => test(command.port, 0));
+    try {
+        parsed = parseArgs({
+            allowPositionals: true,
+            options: {
+                version: { type: "boolean", short: "v" },
+                debug: { type: "boolean", short: "d" },
+                port: { type: "string", short: "p" },
+                help: { type: "boolean", short: "h" },
+            },
+        });
+    } catch (error) {
+        console.error(`${error.message}\n\n${USAGE}`);
+        process.exit(1);
+    }
 
-    program.parse(process.argv);
+    const [command, ...extra] = parsed.positionals;
+
+    if (parsed.values.version) {
+        console.log(pjson.version);
+    } else if (parsed.values.help) {
+        console.log(USAGE);
+    } else if ((command !== undefined && command !== "start") || extra.length > 0) {
+        console.error(`unknown command\n\n${USAGE}`);
+        process.exit(1);
+    } else {
+        if (parsed.values.debug) log.debugging = true;
+
+        test(parsed.values.port, 0);
+    }
 }
 
 function teardown() {

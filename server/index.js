@@ -20,7 +20,6 @@ const http = require("http");
 const express = require("express");
 const network = require("../network");
 const compression = require("compression");
-const { createHttpTerminator } = require("http-terminator");
 const { join } = require("path");
 
 class Server {
@@ -38,7 +37,6 @@ class Server {
         app.disable("x-powered-by");
 
         this.server = http.createServer(app);
-        this.listner = createHttpTerminator({ server: this.server });
 
         app.use((request, _response, next) => {
             this.log.debug(`request [${request.method}] ${request.url}`);
@@ -73,16 +71,25 @@ class Server {
         });
     }
 
+    // Stops the hotspot and the web server. Open connections are closed at once.
     stop() {
-        if (this.running) {
-            this.running = false;
+        if (!this.running) return Promise.resolve();
 
-            this.log.info("shutting down portal");
+        this.running = false;
 
-            network.hotspot.stop();
+        this.log.info("shutting down portal");
 
-            this.listner.terminate().then(() => this.log.info("stopped"));
-        }
+        network.hotspot.stop();
+
+        return new Promise((resolve) => {
+            this.server.close(() => {
+                this.log.info("stopped");
+
+                resolve();
+            });
+
+            this.server.closeAllConnections();
+        });
     }
 }
 

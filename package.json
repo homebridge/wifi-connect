@@ -33,16 +33,12 @@
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "bundledDependencies": [
-        "commander",
         "compression",
-        "express",
-        "http-terminator"
+        "express"
     ],
     "dependencies": {
-        "commander": "8.1.0",
         "compression": "1.7.4",
-        "express": "4.17.1",
-        "http-terminator": "3.0.0"
+        "express": "4.17.1"
     },
     "devDependencies": {
         "@eslint/js": "10.0.1",
