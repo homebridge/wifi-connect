@@ -17,9 +17,12 @@
  **************************************************************************************************/
 
 const network = require("../network");
+const invalid = require("./invalid");
 
 class Wireless {
-    constructor(app) {
+    constructor(app, server) {
+        this.server = server;
+
         app.get("/api/networks", (_request, response) => this.networks(response));
         app.post("/api/wireless/enable", (_request, response) => this.state(true, response));
         app.post("/api/wireless/disable", (_request, response) => this.state(false, response));
@@ -42,35 +45,49 @@ class Wireless {
     }
 
     connect(request, response) {
-        if (network.wireless.enabled) {
-            network.wireless.connect(request.body.ssid, request.body.password, request.params.iface);
+        const { iface } = request.params;
+        const { ssid, password } = request.body || {};
 
-            if (network.wireless.current().find((connection) => connection.ssid === request.body.ssid)) {
+        if (!network.wireless.known(iface) || !network.validate.ssid(ssid) || !network.validate.password(password)) return invalid(response);
+
+        if (network.wireless.enabled) {
+            network.wireless.connect(ssid, password, iface);
+
+            if (network.wireless.current().find((connection) => connection.ssid === ssid)) {
                 if (network.hotspot.running) {
                     network.hotspot.stop();
-
-                    network.wireless.reapply(request.params.iface);
+                    network.wireless.reapply(iface);
                 }
 
-                process.exit();
-            } else if (network.hotspot.running) {
+                // the WiFi this request came in on is gone by now, so the program ends without waiting
+                this.server.exit();
+
+                return response.send();
+            }
+
+            if (network.hotspot.running) {
                 network.hotspot.stop();
                 network.wireless.disconnect("wlan0");
                 network.hotspot.start("Homebridge WiFi Setup", "wlan0");
             }
         }
 
-        response.send();
+        return response.send();
     }
 
     disconnect(request, response) {
+        const { iface } = request.params;
+        const { ssid } = request.body || {};
+
+        if (!network.wireless.known(iface) || !network.validate.ssid(ssid)) return invalid(response);
+
         if (network.wireless.enabled) {
-            network.wireless.disconnect(request.params.iface);
-            network.wireless.forget(request.body.ssid);
+            network.wireless.disconnect(iface);
+            network.wireless.forget(ssid);
         }
 
-        response.send();
+        return response.send();
     }
 }
 
-module.exports = (app) => new Wireless(app);
+module.exports = (app, server) => new Wireless(app, server);

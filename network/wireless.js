@@ -77,6 +77,20 @@ class Wireless {
         command.exec("nmcli", ["radio", "wifi", value ? "on" : "off"]);
     }
 
+    // The WiFi devices NetworkManager looks after.
+    static devices() {
+        const args = ["--terse", "--fields", "device,type,state", "device"];
+
+        return terse.records(command.exec("nmcli", args), 3)
+            .filter((fields) => fields[1] === "wifi" && fields[2] !== "unmanaged")
+            .map((fields) => fields[0]);
+    }
+
+    // True when the name passes the name check and is one of the WiFi devices.
+    static known(iface) {
+        return validate.iface(iface) && Wireless.devices().includes(iface);
+    }
+
     // The WiFi networks in range. Names that fail the name check are left out.
     static scan(iface) {
         const args = ["--terse", "--fields", FIELDS, "device", "wifi", "list", "--rescan", "yes"];

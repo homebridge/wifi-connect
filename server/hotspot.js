@@ -17,6 +17,7 @@
  **************************************************************************************************/
 
 const network = require("../network");
+const invalid = require("./invalid");
 
 class Hotspot {
     constructor(app) {
@@ -25,12 +26,17 @@ class Hotspot {
     }
 
     start(request, response) {
+        const iface = (request.body || {}).iface || "wlan0";
+        const ssid = (request.body || {}).ssid || "Homebridge WiFi Setup";
+
+        if (!network.wireless.known(iface) || !network.validate.ssid(ssid)) return invalid(response);
+
         if (!network.hotspot.running && network.wireless.enabled) {
-            network.wireless.disconnect(request.body.iface || "wlan0");
-            network.hotspot.start(request.body.ssid || "Homebridge WiFi Setup", request.body.iface || "wlan0");
+            network.wireless.disconnect(iface);
+            network.hotspot.start(ssid, iface);
         }
 
-        response.send();
+        return response.send();
     }
 
     stop(response) {

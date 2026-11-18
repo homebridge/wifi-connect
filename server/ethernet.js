@@ -17,6 +17,7 @@
  **************************************************************************************************/
 
 const network = require("../network");
+const invalid = require("./invalid");
 
 class Ethernet {
     constructor(app) {
@@ -25,13 +26,19 @@ class Ethernet {
     }
 
     connect(request, response) {
+        if (!network.ethernet.known(request.params.iface)) return invalid(response);
+
         network.ethernet.up(request.params.iface);
-        response.send();
+
+        return response.send();
     }
 
     disconnect(request, response) {
+        if (!network.ethernet.known(request.params.iface)) return invalid(response);
+
         network.ethernet.down(request.params.iface);
-        response.send();
+
+        return response.send();
     }
 }
 

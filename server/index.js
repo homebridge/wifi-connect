@@ -28,6 +28,9 @@ class Server {
         this.log = log;
         this.running = false;
 
+        // Ends the program once the device has joined a WiFi network. Tests replace this.
+        this.exit = () => process.exit();
+
         const app = express();
 
         app.use(compression());
@@ -49,7 +52,7 @@ class Server {
 
         require("./network")(app);
         require("./ethernet")(app);
-        require("./wireless")(app);
+        require("./wireless")(app, this);
         require("./hotspot")(app);
 
         app.use((_request, response) => response.redirect("/"));
