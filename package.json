@@ -1,6 +1,6 @@
 {
     "name": "@homebridge/wifi-connect",
-    "version": "4.2.0",
+    "version": "4.2.2",
     "description": "Homebridge Capitive WiFi Portal",
     "license": "GPL-3.0",
     "repository": {
