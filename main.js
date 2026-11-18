@@ -23,6 +23,7 @@ const network = require("./network");
 const pjson = require("./package.json");
 const log = require("./server/logger")();
 const server = require("./server")(log);
+const supervisor = require("./server/supervisor");
 
 const USAGE = `Usage: wifi-connect [options] [start]
 
@@ -32,18 +33,7 @@ Options:
   -p, --port <port>  change the port the portal runs on
   -h, --help         display this help`;
 
-function test(port, attempts) {
-    console.log("Waiting for network...");
-    if (network.connected) {
-        process.exit();
-    } else if (attempts >= 20) {
-        server.start(port);
-    } else {
-        setTimeout(() => {
-            test(port, attempts + 1);
-        }, 1000);
-    }
-}
+let running;
 
 function daemon() {
     let parsed;
@@ -75,18 +65,23 @@ function daemon() {
     } else {
         if (parsed.values.debug) log.debugging = true;
 
-        test(parsed.values.port, 0);
+        network.command.onError = (program, reason) => log.debug(`${program} failed (${reason})`);
+        network.hotspot.log = (line) => log.info(line);
+
+        running = supervisor({ network, server, log, port: parsed.values.port });
+        running.start();
     }
 }
 
-function teardown() {
-    if (server) server.stop();
+// Asked to stop from outside (for example "systemctl stop"): shut down cleanly, then end.
+function shutdown() {
+    (running ? running.stop() : Promise.resolve()).finally(() => process.exit(0));
 }
 
-process.on("exit", teardown);
-process.on("SIGINT", teardown);
-process.on("SIGTERM", teardown);
-process.on("SIGUSR1", teardown);
-process.on("SIGUSR2", teardown);
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
+// Whatever the reason for ending, never leave the hotspot behind.
+process.on("exit", () => network.hotspot.stop());
 
 daemon();

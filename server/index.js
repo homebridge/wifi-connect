@@ -27,8 +27,16 @@ class Server {
         this.log = log;
         this.running = false;
 
-        // Ends the program once the device has joined a WiFi network. Tests replace this.
+        this.iface = "wlan0";
+
+        // Ends the program once the device has joined a WiFi network.
         this.exit = () => process.exit();
+
+        // Called for every request, so the caller can tell that the setup page is in use.
+        this.activity = () => {};
+
+        // Called when the web server can not start.
+        this.failed = (error) => { throw error; };
 
         const app = express();
 
@@ -38,8 +46,11 @@ class Server {
 
         this.server = http.createServer(app);
 
+        this.server.on("error", (error) => this.failed(error));
+
         app.use((request, _response, next) => {
             this.log.debug(`request [${request.method}] ${request.url}`);
+            this.activity();
 
             next();
         });
@@ -56,19 +67,30 @@ class Server {
         app.use((_request, response) => response.redirect("/"));
     }
 
-    start(port) {
+    // Starts the web server, then the hotspot on the given WiFi device.
+    start(port, iface) {
+        this.iface = iface || "wlan0";
+
         network.wireless.enabled = true;
 
         this.log.info("starting portal");
 
-        this.server.listen(parseInt(port, 10) || 80, () => {
+        const number = parseInt(port, 10);
+
+        this.server.listen(Number.isInteger(number) && number >= 0 ? number : 80, () => {
             this.running = true;
 
-            network.wireless.disconnect("wlan0");
-            network.hotspot.start("Homebridge WiFi Setup", "wlan0");
+            this.hotspot();
 
-            this.log.info(`listening on port ${parseInt(port, 10) || 80}`);
+            this.log.info(`listening on port ${this.server.address().port}`);
         });
+    }
+
+    // Starts the hotspot again from a clean state.
+    hotspot() {
+        network.hotspot.stop();
+        network.wireless.disconnect(this.iface);
+        network.hotspot.start("Homebridge WiFi Setup", this.iface);
     }
 
     // Stops the hotspot and the web server. Open connections are closed at once.

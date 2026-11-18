@@ -51,10 +51,13 @@ class Wireless {
         if (!network.wireless.known(iface) || !network.validate.ssid(ssid) || !network.validate.password(password)) return invalid(response);
 
         if (network.wireless.enabled) {
+            // the setup page is up when the web server was started together with the hotspot
+            const portal = this.server.running || network.hotspot.running;
+
             network.wireless.connect(ssid, password, iface);
 
             if (network.wireless.current().find((connection) => connection.ssid === ssid)) {
-                if (network.hotspot.running) {
+                if (portal) {
                     network.hotspot.stop();
                     network.wireless.reapply(iface);
                 }
@@ -65,11 +68,11 @@ class Wireless {
                 return response.send();
             }
 
-            if (network.hotspot.running) {
-                network.hotspot.stop();
-                network.wireless.disconnect("wlan0");
-                network.hotspot.start("Homebridge WiFi Setup", "wlan0");
-            }
+            // The connection did not come up, for example because the password is wrong.
+            // The failed network must not stay saved: the hotspot only starts when none is saved.
+            network.wireless.forget(ssid);
+
+            if (portal) this.server.hotspot();
         }
 
         return response.send();
